@@ -189,17 +189,14 @@
         <div class="galeri-container">
             <div class="galeri-header">
                 <h1>🗺️ Harita Galerisi</h1>
-                <p>Kendi hazırladığım haritalar - Türkiye'nin tematik haritaları</p>
+                <p>Kendi hazırladığım 20 tane Türkiye haritası - Türkiye'nin genel haritaları</p>
             </div>
 
             <!-- Kategori Filtreleme -->
             <div class="kategori-filtre">
                 <button class="kategori-btn active" data-kategori="tum">📌 Tümü</button>
-                <button class="kategori-btn" data-kategori="toprak">🌱 Toprak Haritaları</button>
-                <button class="kategori-btn" data-kategori="iklim">🌤️ İklim Haritaları</button>
-                <button class="kategori-btn" data-kategori="nufus">👥 Nüfus Haritaları</button>
                 <button class="kategori-btn" data-kategori="fiziki">⛰️ Fiziki Haritalar</button>
-                <button class="kategori-btn" data-kategori="tarihi">📜 Tarihi Haritalar</button>
+                <button class="kategori-btn" data-kategori="beşeri">📜 Beşeri Haritalar</button>
             </div>
 
             <!-- Galeri Izgarası -->
@@ -231,56 +228,184 @@
                 id: 1,
                 baslik: "Türkiye Toprak Tipleri Haritası",
                 aciklama: "Türkiye'de görülen ana toprak tiplerinin dağılımını gösteren harita. Alüvyal, kırmızı Akdeniz, kahverengi orman, kestanerengi bozkır toprakları.",
-                kategori: "toprak",
+                kategori: "fiziki",
                 resim: "toprak_tipleri.jpg",
-                tarih: "2025",
+                tarih: "2026",
                 detay: "Kendi çizimim - ArcGIS Pro kullanılarak hazırlanmıştır."
             },
             {
                 id: 2,
                 baslik: "Türkiye İklim Tipleri Haritası",
                 aciklama: "Akdeniz, Karadeniz, Karasal, Sert Karasal ve Geçiş iklimlerinin dağılımı.",
-                kategori: "iklim",
+                kategori: "fiziki",
                 resim: "iklim_tipleri.jpg",
-                tarih: "2025",
+                tarih: "2026",
                 detay: "MGM verileri baz alınarak hazırlanmıştır."
             },
             {
                 id: 3,
-                baslik: "Türkiye Nüfus Yoğunluğu Haritası",
-                aciklama: "İl bazında nüfus yoğunluğu dağılımı (kişi/km²). İstanbul, İzmir, Ankara gibi büyük şehirler yoğun bölgeler.",
-                kategori: "nufus",
-                resim: "nufus_yogunlugu.jpg",
-                tarih: "2025",
-                detay: "TÜİK 2025 verilerine göre hazırlanmıştır."
+                baslik: "Türkiye Büyükşehir Belediyesine Sahip İller Haritası",
+                aciklama: "Türkiye il sınırları içinde büyükşehir belediyesi statüsüne sahip illerin gösterildiği harita.",
+                kategori: "beşeri",
+                resim: "buyuksehir_belediyesi.jpg",
+                tarih: "2026",
+                detay: "TÜİK 2026 verilerine göre hazırlanmıştır."
             },
             {
                 id: 4,
-                baslik: "Türkiye Fiziki Haritası",
-                aciklama: "Dağlar, ovalar, akarsular ve göllerin gösterildiği fiziki harita.",
-                kategori: "fiziki",
-                resim: "fiziki_harita.jpg",
-                tarih: "2024",
-                detay: "Sayısal yükseklik modeli kullanılarak hazırlanmıştır."
-            },
-            {
-                id: 5,
                 baslik: "Türkiye İdari Bölünüş Haritası",
                 aciklama: "81 il ve ilçe sınırlarının gösterildiği idari harita.",
-                kategori: "fiziki",
+                kategori: "beşeri",
                 resim: "idari_bolunus.jpg",
-                tarih: "2024",
+                tarih: "2026",
                 detay: "ArcGIS Pro ile hazırlanmıştır."
             },
             {
+                id: 5,
+                baslik: "Türkiye Dağlık Alanlar Haritası",
+                aciklama: "Türkiye'de dağlık alanların gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "dağlar_harita.jpg",
+                tarih: "2026",
+                detay: "HGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
                 id: 6,
-                baslik: "Osmanlı'dan Günümüze Türkiye",
-                aciklama: "Osmanlı İmparatorluğu'ndan günümüze Türkiye'nin toprak değişimleri.",
-                kategori: "tarihi",
-                resim: "tarihi_harita.jpg",
-                tarih: "2023",
-                detay: "Tarih atlasından derlenmiştir."
-            }
+                baslik: "Türkiye Platoluk Alanlar Haritası",
+                aciklama: "Türkiye'de platoluk alanların gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "platoluk_harita.jpg",
+                tarih: "2026",
+                detay: "HGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
+                id: 7,
+                baslik: "Türkiye Ovalık Alanlar Haritası",
+                aciklama: "Türkiye'de ovalık alanların gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "ovalik_harita.jpg",
+                tarih: "2026",
+                detay: "HGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
+                id: 8,
+                baslik: "Türkiye Körfezleri Haritası",
+                aciklama: "Türkiye'de körfezlerin gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "korfezler_harita.jpg",
+                tarih: "2026",
+                detay: "HGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
+                id: 9,
+                baslik: "Türkiye Kıyı Tipleri Haritası",
+                aciklama: "Türkiye'de kıyı tiplerinin gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "kiyilar_harita.jpg",
+                tarih: "2026",
+                detay: "HGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
+                id: 10,
+                baslik: "Türkiye Bitki Örtüsü Haritası",
+                aciklama: "Türkiye'de bitki örtüsünün gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "bitki_ortusu_harita.jpg",
+                tarih: "2026",
+                detay: "OGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
+                id: 11,
+                baslik: "Türkiye Ekolojik Bölgeler Haritası",
+                aciklama: "Türkiye'de ekolojik bölgelerin gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "ekolojik_bolgeler_harita.jpg",
+                tarih: "2026",
+                detay: "İbrahim Atalay'dan yararlanılarak hazırlanmıştır."
+            },
+            {
+                id: 12,
+                baslik: "Türkiye Fitocoğrafya Bölgeleri Haritası",
+                aciklama: "Türkiye'de fitocoğrafya bölgelerinin gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "fitocografya_bolgeleri_harita.jpg",
+                tarih: "2026",
+                detay: "İbrahim Atalay'dan yararlanılarak hazırlanmıştır."
+            },
+            {
+                id: 13,
+                baslik: "Türkiye Tektonik Haritası",
+                aciklama: "Türkiye'de tektonik yapıların gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "tektonik_harita.jpg",
+                tarih: "2026",
+                detay: "İbrahim Atalay'dan yararlanılarak hazırlanmıştır."
+            },
+            {
+                id: 14,
+                baslik: "Türkiye Toprak Tipleri Haritası",
+                aciklama: "Türkiye'de toprak tiplerinin gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "toprak_tipleri_harita.jpg",
+                tarih: "2026",
+                detay: "OGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
+                id: 15,
+                baslik: "Türkiye Zoocoğrafya Bölgeleri Haritası",
+                aciklama: "Türkiye'de zoocoğrafya bölgelerinin gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "zoocografya_bolgeleri_harita.jpg",
+                tarih: "2026",
+                detay: "İbrahim Atalay'dan yararlanılarak hazırlanmıştır." 
+            },
+            {
+                id: 16,
+                baslik: "Türkiye Akarsu ve Göller Haritası",
+                aciklama: "Türkiye'de akarsu ve göllerin gösterildiği harita.",
+                kategori: "fiziki",
+                resim: "akarsular_ve_goller_harita.jpg",
+                tarih: "2026",
+                detay: "HGM verileri kullanılarak hazırlanmıştır."
+            },
+            {
+                id: 17,
+                baslik: "Türkiye Sınır Kapıları Haritası",
+                aciklama: "Türkiye'de sınır kapılarının gösterildiği harita.",
+                kategori: "beşeri",
+                resim: "sinir_kapilari_harita.jpg",
+                tarih: "2026",
+                detay: "ArcGIS Pro ile hazırlanmıştır."
+            },
+            {
+                id: 18,
+                baslik: "Türkiye Kalkınma Bölgeleri Haritası",
+                aciklama: "Türkiye'de kalkınma bölgelerinin gösterildiği harita.",
+                kategori: "beşeri",
+                resim: "kalkinma_bolgeleri_harita.jpg",
+                tarih: "2026",
+                detay: "ArcGIS Pro ile hazırlanmıştır."
+            },
+            {
+                id: 19,
+                baslik: "Türkiye Ana Boru Hatları Haritası",
+                aciklama: "Türkiye'de ana boru hatlarının gösterildiği harita.",
+                kategori: "beşeri",
+                resim: "ana_boru_hatlari_harita.jpg",
+                tarih: "2026",
+                detay: "ArcGIS Pro ile hazırlanmıştır."
+            },
+            {
+                id: 20,
+                baslik: "Türkiye Liman Haritası",
+                aciklama: "Türkiye'de limanların gösterildiği harita.",
+                kategori: "beşeri",
+                resim: "limanlar_harita.jpg",
+                tarih: "2026",
+                detay: "ArcGIS Pro ile hazırlanmıştır."
+            },
+
+
         ];
 
         let aktifKategori = 'tum';
