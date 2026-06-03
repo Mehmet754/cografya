@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkiye İller Haritası | CBS Portalı</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .logo p {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #3498db;
+        }
+
+        .harita-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .harita-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .harita-header h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .harita-header p {
+            color: #666;
+        }
+
+        .harita-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        #harita {
+            height: 500px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #e8edf2;
+            z-index: 1;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .info-panel h3 {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .info-content {
+            padding: 1.2rem;
+        }
+
+        .il-bilgi-tablo {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .il-bilgi-tablo td {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .il-bilgi-tablo td:first-child {
+            font-weight: bold;
+            color: #555;
+            width: 45%;
+        }
+
+        .il-bilgi-tablo td:last-child {
+            text-align: right;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .geri-don-btn {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .geri-don-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Fotoğraf Galerisi Bölümü */
+        .foto-galeri {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+
+        .foto-galeri h3 {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .galeri-icerik {
+            padding: 1.2rem;
+        }
+
+        .foto-container {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0.5rem;
+        }
+
+        .foto-item {
+            flex-shrink: 0;
+            width: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .foto-item:hover {
+            transform: scale(1.03);
+        }
+
+        .foto-item img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .foto-item p {
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #555;
+            background: #f8f9fa;
+        }
+
+        .bos-mesaj {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .harita-wrapper {
+                grid-template-columns: 1fr;
+            }
+            #harita {
+                height: 400px;
+            }
+            .foto-item {
+                width: 200px;
+            }
+            .foto-item img {
+                height: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>📊 Türkiye Tematik Haritası</h1>
+                <p>Coğrafi Bilgi Sistemi</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">🏠 Ana Sayfa</a></li>
+                <li><a href="tematik.html" class="active">📊 Tematik Haritalar</a></li>
+                <li><a href="galeri.html">🖼️ Harita Galerisi</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="harita-container">
+            <div class="harita-header">
+                <h1>🗺️ Türkiye İdari Bölünüş Haritası</h1>
+                <p>81 ilin idari sınırları - İllere tıklayarak bilgi alın</p>
+            </div>
+
+            <div class="harita-wrapper">
+                <div id="harita"></div>
+                <div class="info-panel">
+                    <h3>🏙️ İl Bilgileri</h3>
+                    <div id="il-bilgi" class="info-content">
+                        <p style="color: #999; text-align: center;">Haritadan bir il seçin</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fotoğraf Galerisi Bölümü -->
+            <div class="foto-galeri" id="fotoGaleri" style="display: none;">
+                <h3>İl Bilgileri</h3>
+                <div class="galeri-icerik">
+                    <div id="fotoContainer" class="foto-container">
+                        <!-- Fotoğraflar buraya gelecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Coğrafya öğretiminde materyaller dersi kapsamında hazırlanmıştır</p>
+            <p style="font-size: 0.75rem; margin-top: 0.3rem;">Sürüm: V7.3 | Veri kaynağı: TÜİK 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        let harita, geoJsonLayer;
+        let ilVerileri = {};
+
+        // İl fotoğrafları
+        const ilFotoGaleri = {
+            "İstanbul": [
+                { url: "istanbul_1.jpg", aciklama: "İstanbul Boğazı" },
+                { url: "istanbul_2.jpg", aciklama: "Ayasofya Camii" },
+                { url: "istanbul_3.jpg", aciklama: "Topkapı Sarayı" },
+                { url: "istanbul_4.jpg", aciklama: "Dolmabahçe Sarayı" },
+                { url: "istanbul_5.jpg", aciklama: "Kız Kulesi" },
+                { url: "İstanbul Lokasyon Haritası.jpg", aciklama: "İstanbul lokasyon haritası" },
+                { url: "İstanbul İdari Bölünüş Haritası.jpg", aciklama: "İstanbul idari haritası" },
+                { url: "İstanbul Topografya Haritası.jpg", aciklama: "İstanbul topografya haritası" },
+                { url: "İstanbul Hidrografya Haritası.jpg", aciklama: "İstanbul hidrografya haritası" },
+            ],
+            "Edirne": [
+                { url: "edirne_1.jpg", aciklama: "Selimiye Camii" },
+                { url: "edirne_2.jpg", aciklama: "Edirne Sarayı" },
+                { url: "edirne_3.jpg", aciklama: "Meriç Nehri" },
+                { url: "edirne_4.jpg", aciklama: "Edirne Arkeoloji Müzesi" },
+                { url: "edirne_5.jpg", aciklama: "Edirne Kalesi" },
+
+            ],
+            "Kırklareli": [
+                { url: "kirklareli_1.jpg", aciklama: "Dupnisa Mağarası" },
+                { url: "kirklareli_2.jpg", aciklama: "Pınarhisar Kalesi" },
+                { url: "kirklareli_3.jpg", aciklama: "Kırklareli Kent Ormanı" },
+                { url: "kirklareli_4.jpg", aciklama: "Kırklareli Arkeoloji Müzesi" },
+                { url: "kirklareli_5.jpg", aciklama: "Kırklareli Merkez Camii" },
+            ],
+            "Tekirdağ": [    
+                { url: "tekirdag_1.jpg", aciklama: "Tekirdağ Sahili" },
+                { url: "tekirdag_2.jpg", aciklama: "Rüstem Paşa Camii" },
+                { url: "tekirdag_3.jpg", aciklama: "Tekirdağ Arkeoloji Müzesi" },
+                { url: "tekirdag_4.jpg", aciklama: "Tekirdağ Bağları" },
+                { url: "tekirdag_5.jpg", aciklama: "Tekirdağ Merkez Camii" },
+            ],
+            "Çanakkale": [  
+                { url: "canakkale_1.jpg", aciklama: "Çanakkale Şehitler Abidesi" },
+                { url: "canakkale_2.jpg", aciklama: "Çanakkale Deniz Müzesi" },
+                { url: "canakkale_3.jpg", aciklama: "Çanakkale Kalesi" },
+                { url: "canakkale_4.jpg", aciklama: "Çanakkale Arkeoloji Müzesi" },
+                { url: "canakkale_5.jpg", aciklama: "Çanakkale Sahili" },
+            ],
+            "Balıkesir": [  // İl fotoğrafları
+                { url: "balikesir_1.jpg", aciklama: "Balıkesir Kalesi" },
+                { url: "balikesir_2.jpg", aciklama: "Balıkesir Arkeoloji Müzesi" },
+                { url: "balikesir_3.jpg", aciklama: "Balıkesir Sahili" },
+                { url: "balikesir_4.jpg", aciklama: "Zağnos Paşa Camii ve Külliyesi" },
+                { url: "balikesir_5.jpg", aciklama: "Balıkesir Doğa Parkı" },
+            ],
+            "Bursa": [
+                { url: "bursa_1.jpg", aciklama: "Uludağ" },
+                { url: "bursa_2.jpg", aciklama: "Ulu Camii" },
+                { url: "bursa_3.jpg", aciklama: "Bursa Kalesi" },
+                { url: "bursa_4.jpg", aciklama: "Bursa Arkeoloji Müzesi" },
+                { url: "bursa_5.jpg", aciklama: "Cumalıkızık Köyü" },
+            ],
+            "Yalova": [
+                { url: "yalova_1.jpg", aciklama: "Yalova Termal Kaplıcaları" },
+                { url: "yalova_2.jpg", aciklama: "Yalova Atatürk Köşkü" },
+                { url: "yalova_3.jpg", aciklama: "Yalova Arkeoloji Müzesi" },
+                { url: "yalova_4.jpg", aciklama: "Yalova Sahili" },
+                { url: "yalova_5.jpg", aciklama: "Yalova Doğa Parkı" },
+            ],
+            "Kocaeli": [
+                { url: "kocaeli_1.jpg", aciklama: "Kocaeli Sahili" },
+                { url: "kocaeli_2.jpg", aciklama: "Kocaeli Arkeoloji Müzesi" },
+                { url: "kocaeli_3.jpg", aciklama: "Kocaeli Doğa Parkı" },
+                { url: "kocaeli_4.jpg", aciklama: "Fevziye Camii" },
+                { url: "kocaeli_5.jpg", aciklama: "Kocaeli Kent Ormanı" },
+            ],
+            "Sakarya": [
+                { url: "sakarya_1.jpg", aciklama: "Sakarya Nehri" },
+                { url: "sakarya_2.jpg", aciklama: "Sakarya Arkeoloji Müzesi" },
+                { url: "sakarya_3.jpg", aciklama: "Sakarya Doğa Parkı" },
+                { url: "sakarya_4.jpg", aciklama: "Sakarya Merkez Camii" },
+                { url: "sakarya_5.jpg", aciklama: "Sakarya Kent Ormanı" },
+            ],
+            "Bilecik": [
+                { url: "bilecik_1.jpg", aciklama: "Bilecik Şeyh Edebali Türbesi" },
+                { url: "bilecik_2.jpg", aciklama: "Bilecik Arkeoloji Müzesi" },
+                { url: "bilecik_3.jpg", aciklama: "Bilecik Pazaryeri Küçükelmalı Tabiat Parkı" },
+                { url: "bilecik_4.jpg", aciklama: "Bilecik Merkez Camii" },
+                { url: "bilecik_5.jpg", aciklama: "Bilecik Kent Ormanı" },
+            ],
+            "İzmir": [
+                { url: "izmir_1.jpg", aciklama: "İzmir Saat Kulesi" },
+                { url: "izmir_2.jpg", aciklama: "İzmir Arkeoloji Müzesi" },
+                { url: "izmir_3.jpg", aciklama: "İzmir Sahili" },
+                { url: "izmir_4.jpg", aciklama: "Karagöl Tabiat Parkı" },
+                { url: "izmir_5.jpg", aciklama: "İzmir Merkez Camii" },
+            ],
+            "Manisa": [
+                { url: "manisa_1.jpg", aciklama: "Manisa Spil Dağı" },
+                { url: "manisa_2.jpg", aciklama: "Manisa Arkeoloji Müzesi" },
+                { url: "manisa_3.jpg", aciklama: "Kula Volkanları" },
+                { url: "manisa_4.jpg", aciklama: "Sultan Camii ve Külliyesi" },
+                { url: "manisa_5.jpg", aciklama: "Manisa Kent Ormanı" },
+            ],
+            "Aydın": [
+                { url: "aydin_1.jpg", aciklama: "Aydın Arkeoloji Müzesi" },
+                { url: "aydin_2.jpg", aciklama: "Aydın Sahili" },
+                { url: "aydin_3.jpg", aciklama: "Aydın Doğa Parkı" },
+                { url: "aydin_4.jpg", aciklama: "Süleyman Bey Camii" },
+                { url: "aydin_5.jpg", aciklama: "Efeler Aydın, Koçarlı Adnan Menderes Kent Ormanı" },
+            ],
+            "Muğla": [
+                { url: "mugla_1.jpg", aciklama: "Muğla Sahili" },
+                { url: "mugla_2.jpg", aciklama: "Muğla Arkeoloji Müzesi" },
+                { url: "mugla_3.jpg", aciklama: "Muğla Doğa Parkı" },
+                { url: "mugla_4.jpg", aciklama: "Muğla Kurşunlu Camii" },
+                { url: "mugla_5.jpg", aciklama: "Muğla Kent Ormanı" },
+            ],
+            "Denizli": [
+                { url: "denizli_1.jpg", aciklama: "Denizli Pamukkale" },
+                { url: "denizli_2.jpg", aciklama: "Denizli Arkeoloji Müzesi" },
+                { url: "denizli_3.jpg", aciklama: "Akdağ Tabiat Parkı" },
+                { url: "denizli_4.jpg", aciklama: "Denizli Merkez Camii" },
+                { url: "denizli_5.jpg", aciklama: "Bağbaşı Kent Ormanı" },
+            ],
+            "Uşak": [
+                { url: "usak_1.jpg", aciklama: "Uşak Arkeoloji Müzesi" },
+                { url: "usak_2.jpg", aciklama: "Ulubey Blaundos Antik Kenti" },
+                { url: "usak_3.jpg", aciklama: "Taşyaran Vadisi Tabiat Parkı" },
+                { url: "usak_4.jpg", aciklama: "Uşak Ulu Camii" },
+                { url: "usak_5.jpg", aciklama: "Uşak Kent Ormanı" },
+            ],
+            "Kütahya": [
+                { url: "kutahya_1.jpg", aciklama: "Kütahya Kalesi" },
+                { url: "kutahya_2.jpg", aciklama: "Kütahya Arkeoloji Müzesi" },
+                { url: "kutahya_3.jpg", aciklama: "Çamlıca Tabiat Parkı" },
+                { url: "kutahya_4.jpg", aciklama: "Kütahya Merkez Camii" },
+                { url: "kutahya_5.jpg", aciklama: "Kütahya Kent Ormanı" },
+            ],
+            "Afyonkarahisar": [
+                { url: "afyon_1.jpg", aciklama: "Afyonkarahisar Kalesi" },
+                { url: "afyon_2.jpg", aciklama: "Afyonkarahisar Arkeoloji Müzesi" },
+                { url: "afyon_3.jpg", aciklama: "26 Ağustos Tabiat Parkı" },
+                { url: "afyon_4.jpg", aciklama: "Afyonkarahisar Ulu Camii" },
+                { url: "afyon_5.jpg", aciklama: "Zafer Kent Ormanı" },
+            ],
+            "Burdur": [
+                { url: "burdur_1.jpg", aciklama: "Burdur Arkeoloji Müzesi" },
+                { url: "burdur_2.jpg", aciklama: "Burdur Gölü" },
+                { url: "burdur_3.jpg", aciklama: "Burdur Lisinia Doğa Tabiat Parkı" },
+                { url: "burdur_4.jpg", aciklama: "Burdur Merkez Camii" },
+                { url: "burdur_5.jpg", aciklama: "Burdur Kent Ormanı" },
+            ],
+            "Isparta": [
+                { url: "isparta_1.jpg", aciklama: "Isparta Arkeoloji Müzesi" },
+                { url: "isparta_2.jpg", aciklama: "Eğirdir Gölü" },
+                { url: "isparta_3.jpg", aciklama: "Gölcük Gölü" },
+                { url: "isparta_4.jpg", aciklama: "Kutlu Bey Camii" },
+                { url: "isparta_5.jpg", aciklama: "Isparta Kent Ormanı" },
+            ],
+            "Antalya": [
+                { url: "antalya_1.jpg", aciklama: "Antalya Kaleiçi" },
+                { url: "antalya_2.jpg", aciklama: "Antalya Arkeoloji Müzesi" },
+                { url: "antalya_3.jpg", aciklama: "Düden Şelalesi" },
+                { url: "antalya_4.jpg", aciklama: "Yivli Minare Camii" },
+                { url: "antalya_5.jpg", aciklama: "Kepez Belediyesi Kent Ormanı" },
+            ],
+            "Mersin": [
+                { url: "mersin_1.jpg", aciklama: "Cennet ve Cehennem Çökükleri" },
+                { url: "mersin_2.jpg", aciklama: "Mersin Kız Kalesi" },
+                { url: "mersin_3.jpg", aciklama: "Tarsus Doğa Parkı" },
+                { url: "mersin_4.jpg", aciklama: "Hz. Mikdat (Mugdat) Camii" },
+                { url: "mersin_5.jpg", aciklama: "Emirler Kent Ormanı" },
+            ],
+            "Karaman": [
+                { url: "karaman_1.jpg", aciklama: "Karaman Kalesi" },
+                { url: "karaman_2.jpg", aciklama: "Karaman Arkeoloji Müzesi" },
+                { url: "karaman_3.jpg", aciklama: "Karaman Doğa Parkı" },
+                { url: "karaman_4.jpg", aciklama: "Yunus Emre Camii" },
+                { url: "karaman_5.jpg", aciklama: "Karaman Kent Ormanı" },
+            ],
+            "Konya": [
+                { url: "konya_1.jpg", aciklama: "Konya Mevlana Müzesi" },
+                { url: "konya_2.jpg", aciklama: "Konya Arkeoloji Müzesi" },
+                { url: "konya_3.jpg", aciklama: "Sille Köyü" },
+                { url: "konya_4.jpg", aciklama: "Alaeddin Camii" },
+                { url: "konya_5.jpg", aciklama: "Meram Bağları" },
+            ],
+            "Eskişehir": [
+                { url: "eskisehir_1.jpg", aciklama: "Eskişehir Odunpazarı Evleri" },
+                { url: "eskisehir_2.jpg", aciklama: "Yılmaz Büyükerşen Balmumu Heykeller Müzesi" },
+                { url: "eskisehir_3.jpg", aciklama: "Porsuk Çayı" },
+                { url: "eskisehir_4.jpg", aciklama: "Kurşunlu Cami Eskişehir" },
+                { url: "eskisehir_5.jpg", aciklama: "Sazova Parkı" },
+            ],
+            "Ankara": [
+                { url: "ankara_1.jpg", aciklama: "Anıtkabir" },
+                { url: "ankara_2.jpg", aciklama: "Ankara Kalesi" },
+                { url: "ankara_3.jpg", aciklama: "Eymir Gölü" },
+                { url: "ankara_4.jpg", aciklama: "Kocatepe Camii" },
+                { url: "ankara_5.jpg", aciklama: "Atatürk Orman Çiftliği" },
+            ],
+            "Aksaray": [
+                { url: "aksaray_1.jpg", aciklama: "Selime Katedrali ve Peribacaları" },
+                { url: "aksaray_2.jpg", aciklama: "Ihlara Vadisi" },
+                { url: "aksaray_3.jpg", aciklama: "Hasan Dağı" },
+                { url: "aksaray_4.jpg", aciklama: "Aksaray Ulu Camii" },
+                { url: "aksaray_5.jpg", aciklama: "Aksaray Kent Ormanı" },
+            ],
+            "Bolu": [
+                { url: "bolu_1.jpg", aciklama: "Bolu Kalesi" },
+                { url: "bolu_2.jpg", aciklama: "Bolu Göynük" },
+                { url: "bolu_3.jpg", aciklama: "Akkaya Travertenleri" },
+                { url: "bolu_4.jpg", aciklama: "Bolu Yıldırım Bayezid Camii" },
+                { url: "bolu_5.jpg", aciklama: "Abant Gölü Milli Parkı" },
+            ],
+            "Düzce": [
+                { url: "duzce_1.jpg", aciklama: "Düzce Kalesi" },
+                { url: "duzce_2.jpg", aciklama: "Düzce Arkeoloji Müzesi" },
+                { url: "duzce_3.jpg", aciklama: "Düzce Doğa Parkı" },
+                { url: "duzce_4.jpg", aciklama: "Düzce Merkez Camii" },
+                { url: "duzce_5.jpg", aciklama: "Düzce Kent Ormanı" },
+            ],
+            "Zonguldak": [
+                { url: "zonguldak_1.jpg", aciklama: "Zonguldak Filyos Kalesi" },
+                { url: "zonguldak_2.jpg", aciklama: "Çanakçılar Arkeoloji ve Etnografya Müzesi" },
+                { url: "zonguldak_3.jpg", aciklama: "Danaağzı Tabiat Parkı" },
+                { url: "zonguldak_4.jpg", aciklama: "Zonguldak Uzun Mehmet Camii" },
+                { url: "zonguldak_5.jpg", aciklama: "Zonguldak Kent Ormanı" },
+            ],
+            "Bartın": [
+                { url: "bartın_1.jpg", aciklama: "Bartın Amasra Kalesi" },
+                { url: "bartın_2.jpg", aciklama: "Bartın Amasra Arkeoloji Müzesi" },
+                { url: "bartın_3.jpg", aciklama: "Bartın Balamba Doğa Parkı" },
+                { url: "bartın_4.jpg", aciklama: "Bartın Merkez Camii ve Külliyesi" },
+                { url: "bartın_5.jpg", aciklama: "Bartın Kent Ormanı" },
+            ],
+            "Karabük": [
+                { url: "karabuk_1.jpg", aciklama: "Karabük Safranbolu Evleri" },
+                { url: "karabuk_2.jpg", aciklama: "Safranbolu Kent Tarihi Müzesi" },
+                { url: "karabuk_3.jpg", aciklama: "Karabük Yenice Ormanları" },
+                { url: "karabuk_4.jpg", aciklama: "Köprülü Mehmet Paşa Camii" },
+                { url: "karabuk_5.jpg", aciklama: "Karabük Çamlık Kent Ormanı" },
+            ],
+            "Kastamonu": [
+                { url: "kastamonu_1.jpg", aciklama: "Kastamonu Kalesi" },
+                { url: "kastamonu_2.jpg", aciklama: "Kastamonu Arkeoloji Müzesi" },
+                { url: "kastamonu_3.jpg", aciklama: "Küre Dağları Milli Parkı" },
+                { url: "kastamonu_4.jpg", aciklama: "Kastamonu Nasrullah Camii" },
+                { url: "kastamonu_5.jpg", aciklama: "Abana Kent Ormanı ve Seyir Terası" },
+            ],
+            "Çankırı": [
+                { url: "çankırı_1.jpg", aciklama: "Çankırı Kalesi" },
+                { url: "çankırı_2.jpg", aciklama: "Çankırı Arkeoloji Müzesi" },
+                { url: "çankırı_3.jpg", aciklama: "Hazım Dağlı Tabiat Parkı" },
+                { url: "çankırı_4.jpg", aciklama: "Çankırı Kenbağı Tabiat Parkı" },
+                { url: "çankırı_5.jpg", aciklama: "İndağı Kaya Mezarları" },
+            ],
+            "Sinop": [
+                { url: "sinop_1.jpg", aciklama: "Sinop Kalesi" },
+                { url: "sinop_2.jpg", aciklama: "Sinop Arkeoloji Müzesi" },
+                { url: "sinop_3.jpg", aciklama: "Akgöl Tabiat Parkı" },
+                { url: "sinop_4.jpg", aciklama: "Alaaddin Camii" },
+                { url: "sinop_5.jpg", aciklama: "Sinop Kent Ormanı" },
+            ],
+            "Çorum": [
+                { url: "çorum_1.jpg", aciklama: "Çorum İskilip Kalesi" },
+                { url: "çorum_2.jpg", aciklama: "Çorum Arkeoloji Müzesi" },
+                { url: "çorum_3.jpg", aciklama: "Çatak Tabiat Parkı" },
+                { url: "çorum_4.jpg", aciklama: "Çorum Akşemseddin Camii" },
+                { url: "çorum_5.jpg", aciklama: "Çorum Kent Ormanı" },
+            ],
+            "Kırıkkale": [
+                { url: "kırıkkale_1.jpg", aciklama: "Kırıkkale Kalesi" },
+                { url: "kırıkkale_2.jpg", aciklama: "Kırşehir Kaman Kalehöyük Arkeoloji Müzesi " },
+                { url: "kırıkkale_3.jpg", aciklama: "Kırıkkale Karaahmetli Tabiat Parkı" },
+                { url: "kırıkkale_4.jpg", aciklama: "Kırıkkale Merkez Camii" },
+                { url: "kırıkkale_5.jpg", aciklama: "Kırıkkale Kent Ormanı" },
+            ],
+            "Yozgat": [
+                { url: "yozgat_1.jpg", aciklama: "Yozgat Çamlık Milli Parkı" },
+                { url: "yozgat_2.jpg", aciklama: "Yozgat Arkeoloji Müzesi" },
+                { url: "yozgat_3.jpg", aciklama: "Yozgat Bozok Üniversitesi Botanik Bahçesi" },
+                { url: "yozgat_4.jpg", aciklama: "Çapanoğlu Camii" },
+                { url: "yozgat_5.jpg", aciklama: "Yozgat Kent Ormanı" },
+            ],
+            "Kırşehir": [
+                { url: "kırşehir_1.jpg", aciklama: "Kırşehir Kalesi" },
+                { url: "kırşehir_2.jpg", aciklama: "Kırşehir Kaman Kalehöyük Arkeoloji Müzesi" },
+                { url: "kırşehir_3.jpg", aciklama: "Aşıkpaşa Tabiat Parkı" },
+                { url: "kırşehir_4.jpg", aciklama: "Kırşehir Merkez Camii" },
+                { url: "kırşehir_5.jpg", aciklama: "Kırşehir Kent Ormanı" },
+            ],
+            "Nevşehir": [
+                { url: "nevşehir_1.jpg", aciklama: "Nevşehir Kalesi" },
+                { url: "nevşehir_2.jpg", aciklama: "Nevşehir Arkeoloji Müzesi" },
+                { url: "nevşehir_3.jpg", aciklama: "Göreme Milli Parkı ve Kapadokya" },
+                { url: "nevşehir_4.jpg", aciklama: "Damat İbrahim Paşa Camii" },
+                { url: "nevşehir_5.jpg", aciklama: "Uçhisar Kalesi" },
+            ],
+            "Amasya": [
+                { url: "amasya_1.jpg", aciklama: "Amasya Kalesi" },
+                { url: "amasya_2.jpg", aciklama: "Amasya Arkeoloji Müzesi" },
+                { url: "amasya_3.jpg", aciklama: "Yeşilırmak Nehri" },
+                { url: "amasya_4.jpg", aciklama: "Mehmet Paşa Camii" },
+                { url: "amasya_5.jpg", aciklama: "Amasya Kent Ormanı" },
+            ],
+            "Samsun": [
+                { url: "samsun_1.jpg", aciklama: "Bandırma Gemi Müzesi" },
+                { url: "samsun_2.jpg", aciklama: "Samsun Arkeoloji Müzesi" },
+                { url: "samsun_3.jpg", aciklama: "Vezirsuyu Tabiat Parkı" },
+                { url: "samsun_4.jpg", aciklama: "Samsun Merkez Camii" },
+                { url: "samsun_5.jpg", aciklama: "Atakum Kent Ormanı" },
+            ],
+            "Niğde": [
+                { url: "niğde_1.jpg", aciklama: "Niğde Kalesi" },
+                { url: "niğde_2.jpg", aciklama: "Niğde Arkeoloji Müzesi" },
+                { url: "niğde_3.jpg", aciklama: "Aladağlar Milli Parkı" },
+                { url: "niğde_4.jpg", aciklama: "Niğde Merkez Fatih Sultan Mehmet Camii" },
+                { url: "niğde_5.jpg", aciklama: "Niğde Kent Ormanı" },
+            ],
+            "Adana": [
+                { url: "adana_1.jpg", aciklama: "Adana Yılan Kalesi" },
+                { url: "adana_2.jpg", aciklama: "Adana Arkeoloji Müzesi" },
+                { url: "adana_3.jpg", aciklama: "Adana  Belemedik Tabiat Parkı" },
+                { url: "adana_4.jpg", aciklama: "Adana Sabancı Merkez Camii" },
+                { url: "adana_5.jpg", aciklama: "Adana Kent Ormanı" },
+            ],
+            "Osmaniye": [
+                { url: "osmaniye_1.jpg", aciklama: "Osmaniye Kalesi" },
+                { url: "osmaniye_2.jpg", aciklama: "Karatepe Aslantaş Açık Hava Müzesi" },
+                { url: "osmaniye_3.jpg", aciklama: "Osmaniye Çiftmazı Tabiat Parkı " },
+                { url: "osmaniye_4.jpg", aciklama: "Osmaniye Enverül Hamit Camii ve Şehitlik" },
+                { url: "osmaniye_5.jpg", aciklama: "Osmaniye Kent Ormanı" },
+            ],
+            "Hatay": [
+                { url: "hatay_1.jpg", aciklama: "Hatay Kalesi" },
+                { url: "hatay_2.jpg", aciklama: "Hatay Arkeoloji Müzesi" },
+                { url: "hatay_3.jpg", aciklama: "Belen Geçidi Tabiat Parkı" },
+                { url: "hatay_4.jpg", aciklama: "Habibi Neccar Camisi" },
+                { url: "hatay_5.jpg", aciklama: "Hatay Amanos Dağları" },
+            ],
+            "Gaziantep": [
+                { url: "gaziantep_1.jpg", aciklama: "Gaziantep Kalesi" },
+                { url: "gaziantep_2.jpg", aciklama: "Gaziantep Arkeoloji Müzesi" },
+                { url: "gaziantep_3.jpg", aciklama: "Gaziantep Dülükbaba Tabiat Parkı" },
+                { url: "gaziantep_4.jpg", aciklama: "Gaziantep Kurtuluş Camii" },
+                { url: "gaziantep_5.jpg", aciklama: "Gaziantep Erikçe Kent Ormanı" },
+            ],
+            "Kilis": [
+                { url: "kilis_1.jpg", aciklama: "Kilis Ravanda Kalesi" },
+                { url: "kilis_2.jpg", aciklama: "Kilis Arkeoloji Müzesi" },
+                { url: "kilis_3.jpg", aciklama: "Hisar Çamlığı Tabiat Parkı" },
+                { url: "kilis_4.jpg", aciklama: "Kilis Ulu Camii" },
+                { url: "kilis_5.jpg", aciklama: "Kilis Kent Ormanı" },
+            ],
+            "Kahramanmaraş": [
+                { url: "kahramanmaras_1.jpg", aciklama: "Kahramanmaraş Kalesi" },
+                { url: "kahramanmaras_2.jpg", aciklama: "Kahramanmaraş Arkeoloji Müzesi" },
+                { url: "kahramanmaras_3.jpg", aciklama: "Kahramanmaraş Kapıçam Tabiat Parkı" },
+                { url: "kahramanmaras_4.jpg", aciklama: "Kahramanmaraş Ulu Camii" },
+                { url: "kahramanmaras_5.jpg", aciklama: "Kahramanmaraş Kent Ormanı" },
+            ],
+            "Kayseri": [
+                { url: "kayseri_1.jpg", aciklama: "Kayseri Kalesi" },
+                { url: "kayseri_2.jpg", aciklama: "Kayseri Arkeoloji Müzesi" },
+                { url: "kayseri_3.jpg", aciklama: "Erciyes Dağı" },
+                { url: "kayseri_4.jpg", aciklama: "Kayseri Ulu Camii" },
+                { url: "kayseri_5.jpg", aciklama: "Kayseri Kent Ormanı" },
+            ],
+            "Sivas": [
+                { url: "sivas_1.jpg", aciklama: "Sivas Kalesi" },
+                { url: "sivas_2.jpg", aciklama: "Sivas Arkeoloji Müzesi" },
+                { url: "sivas_3.jpg", aciklama: "Sivas Doğa Parkı" },
+                { url: "sivas_4.jpg", aciklama: "Sivas Divriği Ulu Camii" },
+                { url: "sivas_5.jpg", aciklama: "Sivas Kent Ormanı" },
+            ],
+            "Giresun": [
+                { url: "giresun_1.jpg", aciklama: "Giresun Kalesi" },
+                { url: "giresun_2.jpg", aciklama: "Giresun Arkeoloji Müzesi" },
+                { url: "giresun_3.jpg", aciklama: "Giresun Doğa Parkı" },
+                { url: "giresun_4.jpg", aciklama: "Giresun Kale Camii" },
+                { url: "giresun_5.jpg", aciklama: "Giresun Espiye Kent Ormanı" },
+            ],
+            "Ordu": [
+                { url: "ordu_1.jpg", aciklama: "Ordu Boztepe" },
+                { url: "ordu_2.jpg", aciklama: "Ordu Arkeoloji Müzesi" },
+                { url: "ordu_3.jpg", aciklama: "Ordu Ulugöl Tabiat Parkı" },
+                { url: "ordu_4.jpg", aciklama: "Ordu Hamidiye Camii" },
+                { url: "ordu_5.jpg", aciklama: "Ordu Yoroz Kent Ormanı" },
+            ],
+            "Tokat": [
+                { url: "tokat_1.jpg", aciklama: "Tokat Kalesi" },
+                { url: "tokat_2.jpg", aciklama: "Tokat Arkeoloji Müzesi" },
+                { url: "tokat_3.jpg", aciklama: "Tokat Ballıca Mağarası" },
+                { url: "tokat_4.jpg", aciklama: "Tokat Ali Paşa Camii" },
+                { url: "tokat_5.jpg", aciklama: "Tokat Başçiftlik Kent Ormanı" },
+            ],
+            "Malatya": [
+                { url: "malatya_1.jpg", aciklama: "Malatya Zengibar Kalesi" },
+                { url: "malatya_2.jpg", aciklama: "Malatya Arkeoloji Müzesi" },
+                { url: "malatya_3.jpg", aciklama: "Levent Vadisi Tabiat Parkı" },
+                { url: "malatya_4.jpg", aciklama: "Malatya Ulu Camii" },
+                { url: "malatya_5.jpg", aciklama: "Malatya Beyler Deresi Şehir Parkı" },
+            ],
+            "Adıyaman": [
+                { url: "adiyaman_1.jpg", aciklama: "Adıyaman Kalesi" },
+                { url: "adiyaman_2.jpg", aciklama: "Adıyaman Arkeoloji Müzesi" },
+                { url: "adiyaman_3.jpg", aciklama: "Adıyaman Nemrut Dağı" },
+                { url: "adiyaman_4.jpg", aciklama: "Adıyaman Ulu Camii" },
+                { url: "adiyaman_5.jpg", aciklama: "Adıyaman Karadağ Kent Ormanı" },
+            ],
+            "Şanlıurfa": [
+                { url: "sanliurfa_1.jpg", aciklama: "Şanlıurfa Kalesi" },
+                { url: "sanliurfa_2.jpg", aciklama: "Şanlıurfa Arkeoloji Müzesi" },
+                { url: "sanliurfa_3.jpg", aciklama: "Şanlıurfa Doğa Parkı" },
+                { url: "sanliurfa_4.jpg", aciklama: "Şanlıurfa Ulu Camii" },
+                { url: "sanliurfa_5.jpg", aciklama: "Şanlıurfa Kent Ormanı" },
+            ],
+            "Trabzon": [
+                { url: "trabzon_1.jpg", aciklama: "Trabzon Ayasofya Müzesi" },
+                { url: "trabzon_2.jpg", aciklama: "Trabzon Arkeoloji Müzesi" },
+                { url: "trabzon_3.jpg", aciklama: "Sera Gölü Tabiat Parkı" },
+                { url: "trabzon_4.jpg", aciklama: "Trabzon Ulu Camii" },
+                { url: "trabzon_5.jpg", aciklama: "Trabzon Kent Ormanı" },
+            ],
+            "Rize": [
+                { url: "rize_1.jpg", aciklama: "Rize Kalesi" },
+                { url: "rize_2.jpg", aciklama: "Rize Arkeoloji Müzesi" },
+                { url: "rize_3.jpg", aciklama: "Rize Isırlık Doğa Parkı" },
+                { url: "rize_4.jpg", aciklama: "Rize Ulu Camii" },
+                { url: "rize_5.jpg", aciklama: "Rize Kent Ormanı" },
+            ],
+            "Artvin": [
+                { url: "artvin_1.jpg", aciklama: "Artvin Kalesi" },
+                { url: "artvin_2.jpg", aciklama: "Artvin Yaşam Tarzı Müzesi" },
+                { url: "artvin_3.jpg", aciklama: "Artvin Doğa Parkı" },
+                { url: "artvin_4.jpg", aciklama: "Artvin Ulu Camii" },
+                { url: "artvin_5.jpg", aciklama: "Artvin Kent Ormanı" },
+            ],
+            "Erzurum": [
+                { url: "erzurum_1.jpg", aciklama: "Erzurum Kalesi" },
+                { url: "erzurum_2.jpg", aciklama: "Erzurum Arkeoloji Müzesi" },
+                { url: "erzurum_3.jpg", aciklama: "Erzurum Ata Doğa Parkı" },
+                { url: "erzurum_4.jpg", aciklama: "Erzurum Ulu Camii" },
+                { url: "erzurum_5.jpg", aciklama: "Erzurum Kent Ormanı" },
+            ],
+            "Erzincan": [
+                { url: "erzincan_1.jpg", aciklama: "Erzincan Kalesi" },
+                { url: "erzincan_2.jpg", aciklama: "Erzincan Arkeoloji Müzesi" },
+                { url: "erzincan_3.jpg", aciklama: "Erzincan Doğa Parkı" },
+                { url: "erzincan_4.jpg", aciklama: "Erzincan Terzibaba Camii" },
+                { url: "erzincan_5.jpg", aciklama: "Erzincan Atatürk Kent Ormanı" },
+            ],
+            "Bayburt": [
+                { url: "bayburt_1.jpg", aciklama: "Bayburt Kalesi" },
+                { url: "bayburt_2.jpg", aciklama: "Bayburt Dede Korkut Müzesi" },
+                { url: "bayburt_3.jpg", aciklama: "Bayburt Yakupabdal Tabiat Parkı" },
+                { url: "bayburt_4.jpg", aciklama: "Bayburt Ulu Camii" },
+                { url: "bayburt_5.jpg", aciklama: "Bayburt Kent Ormanı" },
+            ],
+            "Gümüşhane": [
+                { url: "gumushane_1.jpg", aciklama: "Gümüşhane Kov Kalesi" },
+                { url: "gumushane_2.jpg", aciklama: "Gümüşhane Arkeoloji Müzesi" },
+                { url: "gumushane_3.jpg", aciklama: "Gümüşhane Limni Gölü Doğa Parkı" },
+                { url: "gumushane_4.jpg", aciklama: "Gümüşhane Ulu Camii" },
+                { url: "gumushane_5.jpg", aciklama: "Gümüşhane Kent Ormanı" },
+            ],
+            "Ardahan": [
+                { url: "ardahan_1.jpg", aciklama: "Ardahan Kalesi" },
+                { url: "ardahan_2.jpg", aciklama: "Ardahan Arkeoloji Müzesi" },
+                { url: "ardahan_3.jpg", aciklama: "Ardahan Cemal Tural Tabiat Parkı" },
+                { url: "ardahan_4.jpg", aciklama: "Ardahan Serhat Ulu Camii" },
+                { url: "ardahan_5.jpg", aciklama: "Ardahan Kent Ormanı" },
+            ],
+            "Artvin": [
+                { url: "artvin_1.jpg", aciklama: "Artvin Kalesi" },
+                { url: "artvin_2.jpg", aciklama: "Artvin Yaşam Tarzı Müzesi" },
+                { url: "artvin_3.jpg", aciklama: "Artvin Doğa Parkı" },
+                { url: "artvin_4.jpg", aciklama: "Artvin Ulu Camii" },
+                { url: "artvin_5.jpg", aciklama: "Artvin Kent Ormanı" },
+            ],
+            "Kars": [
+                { url: "kars_1.jpg", aciklama: "Kars Kalesi" },
+                { url: "kars_2.jpg", aciklama: "Kars Arkeoloji Müzesi" },
+                { url: "kars_3.jpg", aciklama: "Kars Ani Harabeleri" },
+                { url: "kars_4.jpg", aciklama: "Kars Fethiye Camii" },
+                { url: "kars_5.jpg", aciklama: "Kars Kent Ormanı" },
+            ],
+            "Iğdır": [
+                { url: "igdir_1.jpg", aciklama: "Iğdır Kalesi" },
+                { url: "igdir_2.jpg", aciklama: "Iğdır Arkeoloji Müzesi" },
+                { url: "igdir_3.jpg", aciklama: "Iğdır Doğa Parkı" },
+                { url: "igdir_4.jpg", aciklama: "Iğdır Merkez Camii" },
+                { url: "igdir_5.jpg", aciklama: "Iğdır Kent Ormanı" },
+            ],
+            "Ağrı": [
+                { url: "agri_1.jpg", aciklama: "Ağrı Doğubeyazıt Urartu Kalesi" },
+                { url: "agri_2.jpg", aciklama: "Ağrı Arkeoloji Müzesi" },
+                { url: "agri_3.jpg", aciklama: "Ağrı Dağı Milli Parkı" },
+                { url: "agri_4.jpg", aciklama: "Ağrı Ulu Camii" },
+                { url: "agri_5.jpg", aciklama: "Ağrı İshak Paşa Sarayı" },
+            ],
+            "Van": [
+                { url: "van_1.jpg", aciklama: "Van Kalesi" },
+                { url: "van_2.jpg", aciklama: "Van Arkeoloji Müzesi" },
+                { url: "van_3.jpg", aciklama: "Van Gölü Doğa Parkı" },
+                { url: "van_4.jpg", aciklama: "Van Tarihi Ulu Camii" },
+                { url: "van_5.jpg", aciklama: "Van Akdamar Adası" },
+            ],
+            "Hakkari": [
+                { url: "hakkari_1.jpg", aciklama: "Hakkari Kalesi" },
+                { url: "hakkari_2.jpg", aciklama: "Hakkari Arkeoloji Müzesi" },
+                { url: "hakkari_3.jpg", aciklama: "Hakkari Doğa Parkı" },
+                { url: "hakkari_4.jpg", aciklama: "Hakkari Merkez Camii" },
+                { url: "hakkari_5.jpg", aciklama: "Hakkari Kent Ormanı" },
+            ],
+        };
+
+        // Tüm iller TEK RENK - Açık Mavi
+        const TEK_RENK = '#5DADE2';
+
+        function haritaStili(feature) {
+            return {
+                fillColor: TEK_RENK,
+                weight: 1,
+                color: 'white',
+                fillOpacity: 0.7
+            };
+        }
+
+        function fotoGaleriGoster(plaka, ilAdi) {
+            const galeriDiv = document.getElementById('fotoGaleri');
+            const fotoContainer = document.getElementById('fotoContainer');
+            
+            const fotolar = ilFotoGaleri[ilAdi];
+            
+            if (fotolar && fotolar.length > 0) {
+                fotoContainer.innerHTML = '';
+                fotolar.forEach(foto => {
+                    const fotoItem = document.createElement('div');
+                    fotoItem.className = 'foto-item';
+                    fotoItem.innerHTML = `
+                        <img src="${foto.url}" alt="${foto.aciklama}" onerror="this.src='https://via.placeholder.com/250x160?text=Görsel+Yüklenemedi'">
+                        <p>📷 ${foto.aciklama}</p>
+                    `;
+                    fotoItem.onclick = () => {
+                        window.open(foto.url, '_blank');
+                    };
+                    fotoContainer.appendChild(fotoItem);
+                });
+                galeriDiv.style.display = 'block';
+            } else {
+                galeriDiv.style.display = 'none';
+            }
+        }
+
+        function ilBilgisiGoster(plaka, il, layer) {
+            const yogunluk = (il.nufus / il.yuzolcumu).toFixed(1);
+            document.getElementById('il-bilgi').innerHTML = `
+                <table class="il-bilgi-tablo">
+                    <tr><td style="padding:0.5rem 0;">Plaka Kodu：<\/td><td style="text-align:right;"><strong>${plaka}<\/strong><\/td><\/tr>
+                    <tr><td style="padding:0.5rem 0;">İl Adı：<\/td><td style="text-align:right;"><strong>${il.il}<\/strong><\/td><\/tr>
+                    <tr><td style="padding:0.5rem 0;">Nüfus (2025)：<\/td><td style="text-align:right;"><strong>${il.nufus.toLocaleString('tr-TR')}<\/strong><\/td><\/tr>
+                    <tr><td style="padding:0.5rem 0;">Yüzölçümü：<\/td><td style="text-align:right;"><strong>${il.yuzolcumu.toLocaleString('tr-TR')} km²<\/strong><\/td><\/tr>
+                    <tr><td style="padding:0.5rem 0;">Nüfus Yoğunluğu：<\/td><td style="text-align:right;"><strong>${yogunluk} kişi/km²<\/strong><\/td><\/tr>
+                <\/table>
+                <button class="geri-don-btn" onclick="harita.setView([39.0, 35.0], 6)">🗺️ Türkiye Geneline Dön<\/button>
+            `;
+            
+            // Fotoğraf galerisini göster
+            fotoGaleriGoster(plaka, il.il);
+            
+            harita.fitBounds(layer.getBounds());
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            harita = L.map('harita').setView([39.0, 35.0], 6);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(harita);
+
+            fetch('il.json')
+                .then(res => {
+                    if (!res.ok) throw new Error('il.json bulunamadı');
+                    return res.json();
+                })
+                .then(data => {
+                    data.features.forEach(f => {
+                        const p = f.properties;
+                        if (p && p.Plaka) {
+                            const plaka = p.Plaka.toString().padStart(2, '0');
+                            ilVerileri[plaka] = {
+                                il: p.AD || 'Bilinmiyor',
+                                nufus: parseInt(p.Nüfus) || 0,
+                                yuzolcumu: parseFloat(p.Yüz) || 0
+                            };
+                        }
+                    });
+
+                    geoJsonLayer = L.geoJSON(data, {
+                        style: haritaStili,
+                        onEachFeature: (f, l) => {
+                            const plaka = f.properties?.Plaka?.toString().padStart(2, '0');
+                            const il = ilVerileri[plaka];
+                            if (il) {
+                                l.bindTooltip(`${il.il} (${plaka})`);
+                                l.on('click', () => ilBilgisiGoster(plaka, il, l));
+                            }
+                        }
+                    }).addTo(harita);
+
+                    if (geoJsonLayer.getBounds().isValid()) {
+                        harita.fitBounds(geoJsonLayer.getBounds());
+                    }
+                })
+                .catch(error => {
+                    console.error('Hata:', error);
+                    document.getElementById('harita').innerHTML = `
+                        <div style="padding:2rem;text-align:center;background:#fff3f3;border-radius:10px;">
+                            <h3 style="color:#e74c3c;">❌ Harita Yüklenemedi</h3>
+                            <p style="margin-top:0.5rem;">${error.message}</p>
+                        </div>
+                    `;
+                });
+        });
+    </script>
+</body>
+</html>
